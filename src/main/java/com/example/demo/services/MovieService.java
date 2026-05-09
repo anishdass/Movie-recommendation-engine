@@ -1,23 +1,19 @@
 package com.example.demo.services;
 
-import com.example.demo.models.Movie;
-import com.example.demo.repositories.MovieRepository;
-import lombok.RequiredArgsConstructor;
+import com.example.demo.dto.MovieRequestDTO;
+import com.example.demo.dto.MovieResponseDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import java.util.UUID;
+
 @Service
-@RequiredArgsConstructor
-public class MovieService {
+public interface MovieService {
 
-    private final MovieRepository movieRepository;
+    List<MovieResponseDTO> findAllMovies();
 
-    public List<Movie> findAllMovies(){
-        return movieRepository.findAll();
-    }
+    MovieResponseDTO findMovieById(UUID movieId);
 
-    public Movie saveMovie(Movie movie){
-        return movieRepository.save(movie);
-    }
+    MovieResponseDTO saveMovie(MovieRequestDTO movieRequestDTO);
 }
