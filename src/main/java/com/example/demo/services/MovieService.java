@@ -16,4 +16,6 @@ public interface MovieService {
     MovieResponseDTO findMovieById(UUID movieId);
 
     MovieResponseDTO saveMovie(MovieRequestDTO movieRequestDTO);
+
+    void importPopularMovies();
 }

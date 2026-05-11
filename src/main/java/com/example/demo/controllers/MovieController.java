@@ -20,7 +20,8 @@ public class MovieController {
     private final MovieService movieService;
 
     @GetMapping
-    public ResponseEntity<List<MovieResponseDTO>> getMovies(){
+    public ResponseEntity<List<MovieResponseDTO>> getMovies(
+    ){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(movieService.findAllMovies());
@@ -38,6 +39,14 @@ public class MovieController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(movieService.saveMovie(requestDTO));
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<String> importMovies(){
+        movieService.importPopularMovies();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Movies imported successfully");
     }
 
 }

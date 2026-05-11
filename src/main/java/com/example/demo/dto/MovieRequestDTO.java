@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import com.example.demo.annotation.IsHalfStep;
 import jakarta.validation.constraints.*;
 
 public record MovieRequestDTO(
@@ -11,6 +12,7 @@ public record MovieRequestDTO(
 
         @DecimalMin(value = "0.5")
         @DecimalMax(value = "5")
+        @IsHalfStep
         Double rating,
 
         @Min(value = 1900)

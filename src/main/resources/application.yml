@@ -19,3 +19,7 @@ logging:
   level:
     org.springframework.security: DEBUG
 
+tmdb:
+  api:
+    key:  3570b521118764bbb1a871af55e9fb5c
+    url:  https://api.themoviedb.org/3

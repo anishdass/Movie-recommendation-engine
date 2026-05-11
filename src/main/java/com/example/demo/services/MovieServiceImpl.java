@@ -1,7 +1,9 @@
 package com.example.demo.services;
 
+import com.example.demo.components.TMDBClient;
 import com.example.demo.dto.MovieRequestDTO;
 import com.example.demo.dto.MovieResponseDTO;
+import com.example.demo.dto.TMDBResponseDTO;
 import com.example.demo.exceptions.MovieNotFoundException;
 import com.example.demo.models.Movie;
 import com.example.demo.repositories.MovieRepository;
@@ -16,8 +18,11 @@ import java.util.UUID;
 public class MovieServiceImpl implements MovieService{
 
     private final MovieRepository movieRepository;
+    private final TMDBClient tmdbClient;
 
     public List<MovieResponseDTO> findAllMovies(){
+
+
         return movieRepository.findAll()
                 .stream()
                 .map(this::mapToResponse)
@@ -45,6 +50,27 @@ public class MovieServiceImpl implements MovieService{
         return mapToResponse(savedMovie);
     }
 
+    @Override
+    public void importPopularMovies() {
+        TMDBResponseDTO response=
+                tmdbClient.getPopularMovies();
+
+        response.getResults()
+                .forEach(movieDTO -> {
+                    Movie movie=Movie.builder()
+                            .title(movieDTO.getTitle())
+                            .genre("Unknown")
+                            .rating(movieDTO.getVote_average())
+                            .releaseYear(
+                                    extractYear(
+                                    movieDTO.getRelease_date()
+                                    ))
+                            .build();
+
+                    movieRepository.save(movie);
+                });
+    }
+
     private MovieResponseDTO mapToResponse(Movie savedMovie){
         return new MovieResponseDTO(
                 savedMovie.getId(),
@@ -53,6 +79,16 @@ public class MovieServiceImpl implements MovieService{
                 savedMovie.getRating(),
                 savedMovie.getReleaseYear()
         );
+    }
+
+    private Integer extractYear(String date){
+
+        if(date==null||date.isBlank()){
+            return null;
+        }
+
+        return Integer.parseInt(date.substring(0, 4));
+
     }
 
 }
