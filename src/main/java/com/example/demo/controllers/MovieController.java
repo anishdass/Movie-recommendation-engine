@@ -2,6 +2,8 @@ package com.example.demo.controllers;
 
 import com.example.demo.dto.MovieRequestDTO;
 import com.example.demo.dto.MovieResponseDTO;
+import com.example.demo.events.MovieWatchedEvent;
+import com.example.demo.kafka.MovieEventProducer;
 import com.example.demo.services.MovieService;
 import com.example.demo.services.TrendingService;
 import jakarta.validation.Valid;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -21,6 +24,7 @@ import java.util.UUID;
 public class MovieController {
     private final MovieService movieService;
     private final TrendingService trendingService;
+    private final MovieEventProducer movieEventProducer;
 
     @GetMapping
     public ResponseEntity<List<MovieResponseDTO>> getMovies(
@@ -53,8 +57,15 @@ public class MovieController {
     }
 
     @PostMapping("/{id}/watch")
-    public ResponseEntity<String> watchMovie(@PathVariable UUID id){
-        trendingService.incrementMovieScore(id.toString());
+    public ResponseEntity<String> watchMovie(@PathVariable UUID id,
+                                             @RequestParam UUID userId){
+        movieEventProducer.publishMovieWatchedEvent(
+                new MovieWatchedEvent(
+                        id,
+                        userId,
+                        LocalDateTime.now()
+                )
+        );
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("Movie Watched");
